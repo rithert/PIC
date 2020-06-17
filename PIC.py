@@ -39,9 +39,10 @@ class pICS(modelo_matematico):
 
 class PIC_prob_num_cliente():
     def __init__(self,RO,P_0):
-        self.__ρ  = RO
-        self.__p0 = P_0
-        self.Pt = 0
+        self.__ρ  = RO      #probabilidad de hallar el sistema ocupado
+        self.__p0 = P_0     #probabiliadd de hallar el sistema ocioso
+        self.Pt = 0         #Probabilidad total rango 
+        
     
 
     #La probabilidad de hallar exactamente n clientes dentro del sistema
@@ -50,11 +51,12 @@ class PIC_prob_num_cliente():
         return (round(Pn,4))
 
     #La probabilidad de hallar exactamente n clientes dentro del sistema, valores(lista) ingresdos por el cliente
-    def func_nclientes_range(self,ro,P0,lista):
+    def func_nclientes_rangeL(self,lista):
+        Ptl = 0        #Probabilidad total lista establecida por el cliente
         for i in  lista:
-            Pn = P0*(ro**i)
-            self.Pt += Pn
-        return (round(Pn,4))
+            Pn = self.__p0*(self.__ρ**i)
+            Ptl += Pn
+        return (round(Ptl,4))
     
     #La probabilidad de hallar exactamente n clientes dentro del sistema rango[x-n]
     def func_nclientes_range(self,ro,P0,Xinicial,Xfinal):
@@ -65,7 +67,7 @@ class PIC_prob_num_cliente():
         return (round(Pn,4))
 
     #La probabilidad de hallar exactamente al menos n clientes dentro del sistema 
-    def func_nclientes_range(self,ro,P0,Xinicial):
+    def func_nclientes_infinito(self,ro,P0,Xinicial):
         lista = list(range(Xinicial,0,-1))
         for i in  lista:
             Pn = P0*(ro**i)
@@ -85,7 +87,7 @@ while True:
         Vlambda = float(input("Ingrese el valor de lambda(taza de llegada λ): "))
         Vmiu = float(input("Ingrese el valor de miu taza de servicio (taza de servicio μ): "))
         if Vlambda > 0 and Vmiu >0: 
-            ObjPICS = PICS(Vlambda,Vmiu)
+            ObjPICS = pICS(Vlambda,Vmiu)
             break
         else :
             continue
@@ -108,24 +110,29 @@ prob_Total = 0
 
 print("""Menu
         1. Probabilidad de usuarios en el sistema
-        2. Probabilidad de usuarios en cola 
+        2. La probabilidad de hallar exactamente n clientes dentro del sistema, valores(lista) ingresdos por el cliente
+        3. La probabilidad de hallar exactamente n clientes dentro del sistema rango[x-n]
+        4. La probabilidad de hallar exactamente al menos n clientes dentro del sistema 
         """)
-
 opcion = int(input("Ingrese la una opcion "))
+Obje_Prob_Sis_PIC = PIC_prob_num_cliente(valor_ro,valor_inve_ro)
 if opcion ==1:
-    while(True):
-        print ("La probabilidad de hallar exactamente n clientes dentro del sistema")
-        n_clientes = int(input("Ingrese el numero de clientes EN EL SISTEMA "))
-        proba_n_clientes = ObjPICS.func_nclientes(valor_ro,valor_inve_ro,n_clientes)
-        print(f"Probabiliad de hallar {n_clientes} clientes: {proba_n_clientes}")
-        prob_Total += proba_n_clientes
-        seguir = input("Si desea parar ingrese *")
-        if seguir == "*":
-            break
-        else:
-            continue
-    print("Probilidad total: ", prob_Total)
-            
+    print ("La probabilidad de hallar exactamente n clientes dentro del sistema")
+    n_clientes = int(input("Ingrese el numero de clientes EN EL SISTEMA "))
+    proba_n_clientes = Obje_Prob_Sis_PIC.func_nclientes(n_clientes)
+    print(f"Probabiliad de hallar {n_clientes} clientes en el sistema es de : {proba_n_clientes}")
+elif opcion ==2:
+    lista = []
+    print("La probabilidad de hallar exactamente n clientes dentro del sistema,(lista) ingresdos por el cliente")
+    n = int(input("Ingrese el numero de valores a ingresar: "))
+    for i in range(n):
+        elemento = int(input(f"Ingrese el valor {i} :"))
+        lista.append(elemento)
+    print("la probabilidad dotal es de: ",Obje_Prob_Sis_PIC.func_nclientes_rangeL(lista))
+   
+  
+elif opcion ==3:
+    pass
 else:
     prob_Total += proba_n_clientes
     print ("Probabilidad total:", prob_Total)
